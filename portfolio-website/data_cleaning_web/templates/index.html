@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Data Cleaning Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="/static/main.js"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <nav class="bg-gray-800 shadow p-4 flex items-center justify-between">
+        <div class="text-2xl font-bold text-yellow-400">CSV Data Cleaning Tool</div>
+        <div class="text-gray-400 text-sm">by Nagaraj335</div>
+    </nav>
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col items-center justify-center py-10">
+        <form id="url-form" class="w-full max-w-xl bg-gray-800 rounded-lg shadow-lg p-8 space-y-6">
+            <label class="block">
+                <span class="block mb-2 font-semibold">Enter CSV File URL:</span>
+                <input id="csv-url" type="url" name="csv_url" placeholder="https://example.com/data.csv" class="w-full p-2 rounded text-gray-900" required>
+            </label>
+            <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold py-2 px-4 rounded transition">Clean Data</button>
+        </form>
+        <div id="loading" class="mt-6 hidden text-yellow-300">Cleaning in progress...</div>
+        <div id="result" class="mt-6 w-full max-w-xl"></div>
+    </main>
+</body>
+</html>
