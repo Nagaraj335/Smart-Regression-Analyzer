@@ -1,4 +1,0 @@
-# Chess Bot Requirements
-pygame>=2.1.0
-python-chess>=1.999
-numpy>=1.21.0
