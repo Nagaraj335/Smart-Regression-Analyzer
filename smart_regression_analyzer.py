@@ -192,9 +192,29 @@ class SmartRegressionAnalyzer:
             for col in categorical_cols:
                 X[col] = le.fit_transform(X[col].astype(str))
         
-        # Handle missing values
-        X = X.fillna(X.mean() if X.select_dtypes(include=[np.number]).shape[1] > 0 else 0)
-        y = y.fillna(y.mean())
+        # Handle missing values more robustly
+        # First, handle numeric columns
+        numeric_columns = X.select_dtypes(include=[np.number]).columns
+        for col in numeric_columns:
+            if X[col].isnull().any():
+                # Fill with mean, if mean is NaN (all values missing), fill with 0
+                mean_val = X[col].mean()
+                X[col] = X[col].fillna(mean_val if not pd.isna(mean_val) else 0)
+        
+        # Handle any remaining non-numeric columns  
+        non_numeric_columns = X.select_dtypes(exclude=[np.number]).columns
+        for col in non_numeric_columns:
+            if X[col].isnull().any():
+                X[col] = X[col].fillna(0)  # Fill with 0 for encoded categorical
+        
+        # Handle target variable
+        if pd.isna(y).any():
+            target_mean = y.mean()
+            y = y.fillna(target_mean if not pd.isna(target_mean) else 0)
+        
+        # Final safety check - replace any remaining NaN with 0
+        X = X.fillna(0)
+        y = y.fillna(0)
         
         return X, y, feature_cols
     
@@ -217,6 +237,22 @@ class SmartRegressionAnalyzer:
         
         # Split data
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        
+        # Data validation - ensure no NaN values remain
+        if X_train.isnull().any().any():
+            X_train = X_train.fillna(0)
+        if X_test.isnull().any().any():
+            X_test = X_test.fillna(0)
+        if pd.isna(y_train).any():
+            y_train = y_train.fillna(0)
+        if pd.isna(y_test).any():
+            y_test = y_test.fillna(0)
+            
+        # Convert to numeric to ensure compatibility
+        X_train = X_train.apply(pd.to_numeric, errors='coerce').fillna(0)
+        X_test = X_test.apply(pd.to_numeric, errors='coerce').fillna(0)
+        y_train = pd.to_numeric(y_train, errors='coerce').fillna(0)
+        y_test = pd.to_numeric(y_test, errors='coerce').fillna(0)
         
         # Scale features
         scaler = StandardScaler()
@@ -397,9 +433,20 @@ def main():
             # Load data
             df = pd.read_csv(uploaded_file)
             
+            # Data quality check
+            missing_count = df.isnull().sum().sum()
+            missing_percentage = (missing_count / (df.shape[0] * df.shape[1])) * 100
+            
             st.subheader("📊 Dataset Overview")
             st.write(f"**Shape:** {df.shape[0]} rows × {df.shape[1]} columns")
             st.write(f"**Size:** {uploaded_file.size} bytes")
+            
+            # Display data quality warnings
+            if missing_count > 0:
+                st.warning(f"⚠️ **Data Quality Alert:** {missing_count} missing values detected ({missing_percentage:.1f}% of data)")
+                st.info("📝 **Note:** Missing values will be automatically handled by filling with mean values for analysis.")
+            else:
+                st.success("✅ **Data Quality:** No missing values detected!")
             
             # Auto-detect target column
             suggested_target = analyzer.detect_target_column(df)
