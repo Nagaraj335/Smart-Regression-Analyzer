@@ -33,7 +33,7 @@
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/surakshamitra/Smart-Regression-Analyzer.git
+git clone https://github.com/Nagaraj335/Smart-Regression-Analyzer.git
 cd Smart-Regression-Analyzer
 ```
 
@@ -145,7 +145,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Nagaraj Satish Navada**
 - LinkedIn: [Your LinkedIn Profile](https://linkedin.com/in/yourprofile)
-- GitHub: [@surakshamitra](https://github.com/surakshamitra)
+- GitHub: [@Nagaraj335](https://github.com/Nagaraj335)
 
 ## 🌟 **Acknowledgments**
 
